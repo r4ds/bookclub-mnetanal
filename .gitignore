@@ -5,8 +5,13 @@
 .DS_Store
 _book
 _bookdown_files
-bookclub-BOOKABBR.Rmd
-bookclub-BOOKABBR.knit.md
-bookclub-BOOKABBR_files
+bookclub-mnetanal.Rmd
+bookclub-mnetanal.knit.md
+bookclub-mnetanal.md
+bookclub-mnetanal.rds
+bookclub-mnetanal_files
 libs
 *.html
+[0-9][0-9].md
+index.md
+render*.rds

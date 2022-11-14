@@ -27,6 +27,7 @@ Imports:
     statnet,
     textmineR,
     tidygraph,
-    tidytext
+    tidytext,
+    tidyverse
 Remotes:
     ropensci/gutenbergr

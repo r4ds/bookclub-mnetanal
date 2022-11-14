@@ -241,14 +241,8 @@ Finally, we may wish to remove columns in a data.frame, matrix or vector. We can
 
 -   
 
-```{r}
+```{r eval = FALSE}
 install.packages("ggraph",repos = "http://cran.us.r-project.org")
-```
-
-```{r include=FALSE}
-usethis::use_package("ggraph")
-usethis::use_package("tidygraph")
-
 ```
 
 The library function tells R to add the package to the current R session

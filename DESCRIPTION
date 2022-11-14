@@ -14,6 +14,7 @@ Depends:
 Imports: 
     blockmodels,
     bookdown,
+    ggraph,
     gutenbergr,
     igraph,
     intergraph,
@@ -25,6 +26,8 @@ Imports:
     RSiena,
     statnet,
     textmineR,
-    tidytext
+    tidygraph,
+    tidytext,
+    tidyverse
 Remotes:
     ropensci/gutenbergr

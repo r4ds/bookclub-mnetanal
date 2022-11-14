@@ -1,24 +1,281 @@
 # R Basics
 
-**Learning objectives:**
+**Outline**
 
-- THESE ARE NICE TO HAVE BUT NOT ABSOLUTELY NECESSARY
+1.  Intro to the book club.
+    1.  What is this book about ?
+    2.  Who is the author?
+2.  What makes a "network" ?
+3.  Vectors, matrices and data.frames Indexing and Subsetting
 
-## SLIDE 1
+## Intro to the book club
 
-- ADD SLIDES AS SECTIONS (`##`).
-- TRY TO KEEP THEM RELATIVELY SLIDE-LIKE; THESE ARE NOTES, NOT THE BOOK ITSELF.
+### What is this book about?
 
-## Meeting Videos
+-   An introduction seminar to network analysis theory and methods, with focus social networks.
 
-### Cohort 1
+-   The book emphasizes the unity of theory and method in network analysis (check the rich reading list).
 
-`r knitr::include_url("https://www.youtube.com/embed/URL")`
+### Who is the author?
 
-<details>
-<summary> Meeting chat log </summary>
+![Mark Hoffman, Assistant Professor of Sociology[^-1]](https://sociology.stanford.edu/sites/sociology/files/styles/hs_medium_square_360x360/public/media/people/sociology_mark_21_bw_copy_1.jpeg?h=e277423d&itok=SKeY6ZPJ)
+
+[^-1]: <https://sociology.stanford.edu/people/mark-hoffman>
+
+[^-2]: <https://sociology.stanford.edu/people/mark-hoffman>
+
+-   Hoffman completed his Ph.D. in Sociology at Columbia University and received his B.A. in Social Research and Public Policy from NYU Abu Dhabi.
+
+-   His research lies at the intersection of social network analysis, social history, and computational social science
+
+### What makes a "network"?
+
+![Social network (Facebook, 2017) connections "shape" our world.[^-3]](https://scontent-vie1-1.xx.fbcdn.net/v/t31.18172-8/19575079_10103832396388711_8894816584589808440_o.jpg?_nc_cat=109&ccb=1-7&_nc_sid=e3f864&_nc_ohc=T2XyoCG81-QAX_nFI01&_nc_ht=scontent-vie1-1.xx&oh=00_AfAAW3R5IOrvQiT4P3HngbJT_983b7NuDCnrMaSa5nc1GA&oe=639843FD){width="637"}
+
+[^-3]: facebook cover of Mark Zuckerberg
+
+[^-4]: facebook cover of Mark Zuckerberg
+
+A **network** is a catalog of a system's components often called *nodes* or *vertices* and the direct interactions between them, called *links* or *edges.* This representation, also known as **graph,** offers a common language to study systems of different natures and scales.[^-5]
+
+[^-5]: <http://networksciencebook.com/chapter/2#networks-graphs>
+
+![(a) the Internet, where routers are connected to each other; (b) Hollywood actor network, where two actors are connec; (c) a protein-protein interaction network. (d) graph representation, consisting of N = 4 nodes and L = 4 links. (from Network Science by Albert-László Barabási)](http://networksciencebook.com/images/ch-02/figure-2-2.jpg){width="559"}
+
+**Network analysis** focuses on patterns of relations between nodes.
+
+Examples of network analysis domains:
+
+-   Study the *structure* of affective *links* between persons
+
+-   Study *flows* of commodities between organizations.
+
+-   Find *shared* members between social movement organizations.
+
+-   Study *shared* needles between drug users.
+
+What is common across these domains is an emphasis on the **structure of relations**, which serves to link micro- and macro-level processes.
+
+## Vectors, matrices and data.frames
+
+**Vectors** are collection of elements of the same type without dimensions. Vectors of length 1 are called **scalars**.
+
+```{r}
+scalar_1 <- 1
+scalar_2 <- 2
+scalar_3 <- 3
+length(scalar_1) #length of a the scalar is 1
+```
+
+```{r}
+(vector_123 <- c(scalar_1, scalar_2, scalar_3))
+(vector_long <- c(vector_123, vector_123))
+dim(vector_123) #dimensions of the vector returns NULL
+```
+
+Scalars come in four different types
+
+```{r}
+typeof(TRUE)
+typeof(1.5)
+typeof(1L)
+typeof("one")
+```
+
+R can serve as a calculator.
+
+```{r}
+#basic mathematical operations
+scalar_1+scalar_2
+scalar_3^scalar_2
+```
+
+Computations on vectors are performed element-wise.
+
+```{r}
+vector_123*scalar_2
+```
+
+Functions in R have names. A basic function is `print()`.
+
+```{r}
+print("Hello world!")
+```
+
+`log()` is another useful function and it has two arguments, x and base.
+
+```{r}
+#order matters if arguments are not specified 
+log(8, base = 2)
+log(x = 8, base = 2)
+log(8, 2)
+log(base = 2, x = 8)
+log(2, 8)
+```
+
+Another important function is `sample()` that takes a sample from a vector.
+
+```{r}
+sample(1:5, 3) #random sample without replacement
+sample(1:5, 3, replace = TRUE) #random sample with replacement
+sample(1:5, 3, prob = c(0.2,0.1,0.3,0.1,0.3)) #odd-biased sample without replacement
+```
+
+A **matrix** is just a vector with dimensions.
+
+```{r}
+#adding dimensions to a vector transforms it to matrix
+vector_long_2 <- vector_long
+identical(vector_long, vector_long_2)
+(dim(vector_long_2) <- c(2,3))
+identical(vector_long, vector_long_2)
+dim(vector_long)
+dim(vector_long_2)
+```
+
+Matrices can be created using the `matrix()` function.
+
+```{r}
+matrix(vector_long, 2, 3)
+```
+
+The default for `matrix()` function is to fill values by-column. This can changed by setting `byrow` to TRUE
+
+```{r}
+matrix(vector_long, 2, 3, byrow = TRUE)
+```
+
+Example: Simulate an adjacency matrix for a network[^-6]
+
+[^-6]: Adjacency matrix is symmetric for one-mode network. This symmerty might not hold for two-mode AKA bipartite networks.
+
+```{r}
+set.seed(1992)
+#1 = link,0 = no-link
+x <- sample(c(1,0), 25, replace = TRUE, prob=c(.5,.5))
+#names of the network's nodes
+dim_names <- list(c("Thea", "Pravin", "Troy", "Albin", "Clementine"),
+                  c("Thea", "Pravin", "Troy", "Albin", "Clementine"))
+#creat 5x5 adjacency matix
+(matrix_data2 <- matrix(x,
+                        nrow=5, 
+                        ncol=5,
+                        byrow =TRUE,
+                        dimnames = dim_names)#set names of the rows and columns
+  )
+
+isSymmetric(matrix_data2)
+```
+
+A **data.frame** is a collection of vectors of the same length. We can convert a matrix into a **data.frame** and vice versa.
+
+```{r}
+#convert matrix to dataframe
+class(matrix_data2)
+
+df_data2 <- as.data.frame(matrix_data2)
+class(df_data2)
+```
+
+-   data.frames are inefficient in R and are increasingly being replaced by user-created data classes, such as data.table.[^-7]
+
+-   Another important data structure that you need to familiarize yourself with if you're new to R is **lists**
+
+[^-7]: adjacency matrix , especially large ones, are recommended to be stored as sparse matrix for memory efficiency.
+
+## Indexing and Subsetting
+
+Subsetting works by using indices of interest with square brackets.
+
+In matrix, using a single index treats it as a vector and selects the cells based on their order
+
+```{r}
+matrix_data2
+matrix_data2[c(1,7,20,25)]
+```
+
+Using two indices subsets the matrix based on [row,column] pairs
+
+```{r}
+matrix_data2[1,4]
+matrix_data2[c(1,2),c(4,5)]
+```
+
+We can also subset based on the column/row names
+
+```{r}
+matrix_data2["Thea", "Troy"]
+```
+
+We can use subsetting to change specific cells in the matrix
+
+```{r}
+matrix_data2[c(1,7,20,25)] <- 7
+matrix_data2
+
+matrix_data2[c(1,2),c(4,5)] <- 9
+matrix_data2
+```
+
+Subsetting in dataframe using a single index works differently.
+
+```{r}
+#select columns 1, 2, and 3
+df_data2[c(1,2,3)]
+```
+
+Finally, we may wish to remove columns in a data.frame, matrix or vector. We can use the `subset` function to do this.
+
+```{r}
+#
+(subset( vector_123, vector_123 > 1))
+(vector_123[vector_123>1])
 
 ```
-LOG
+
+## Loading Packages
+
+-   Packages are collections of R functions, data, and compiled code.
+
+-   **igraph** is collection of network analysis tools with the emphasis on efficiency, portability and ease of use
+
+-   
+
+```{r eval = FALSE}
+install.packages("ggraph",repos = "http://cran.us.r-project.org")
 ```
-</details>
+
+The library function tells R to add the package to the current R session
+
+```{r}
+suppressPackageStartupMessages(library(igraph))
+suppressPackageStartupMessages(library(ggraph))
+suppressPackageStartupMessages(library(tidygraph))
+suppressPackageStartupMessages(library(tidyverse))
+```
+
+```{r}
+matrix_data2 %>%
+  graph.adjacency(mode = "undirected")%>%
+  plot()
+```
+
+```{r}
+tbl_links <- matrix_data2 %>%
+  graph.adjacency()%>%
+  get.edgelist() %>%
+  as_tibble() %>%
+  dplyr::rename(from = "V1", to = "V2")
+  
+tbl_nodes <- data.frame(name = tbl_links %>% unlist %>% unique())%>%
+  as_tibble()
+
+graph <- graph_from_data_frame(tbl_links, tbl_nodes, directed = FALSE)
+
+graph %>%
+  ggraph()+
+  geom_edge_link() + 
+  geom_node_point()+ 
+  geom_node_text(aes(label = name), repel = TRUE, size = 8)
+
+```

@@ -70,13 +70,9 @@ edgelist %>%
 `r knitr::include_url("https://www.youtube.com/embed/URL")`
 
 <details>
+<summary> Meeting chat log </summary>
 
-<summary>
-
-Meeting chat log
-
-</summary>
-
-    LOG
-
+```
+LOG
+```
 </details>

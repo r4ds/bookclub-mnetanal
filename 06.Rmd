@@ -84,3 +84,17 @@ We can visualize the network using the plot() function.
 ```{r}
 plot(network)
 ```
+
+## Meeting Videos
+
+### Cohort 1
+
+`r knitr::include_url("https://www.youtube.com/embed/URL")`
+
+<details>
+<summary> Meeting chat log </summary>
+
+```
+LOG
+```
+</details>

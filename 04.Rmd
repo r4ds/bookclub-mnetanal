@@ -147,7 +147,7 @@ matrix(vector_long, 2, 3, byrow = TRUE)
 
 Example: Simulate an adjacency matrix for a network[^-6]
 
-[^-6]: Adjacency matrix is symmetric for one-mode network. This symmerty might not hold for two-mode AKA bipartite networks.
+[^-6]: For undirected graphs, adjacency matrix is symmetric for one-mode network. This symmerty might not hold for two-mode AKA bipartite networks. In case of directed graphs the adjacency matrix can be asymmetric to reflect directionality of the link/edge. (Thanks Pierre Olivier for your input)
 
 ```{r}
 set.seed(1992)
@@ -279,3 +279,17 @@ graph %>%
   geom_node_text(aes(label = name), repel = TRUE, size = 8)
 
 ```
+
+## Meeting Videos
+
+### Cohort 1
+
+`r knitr::include_url("https://www.youtube.com/embed/URL")`
+
+<details>
+<summary> Meeting chat log </summary>
+
+```
+LOG
+```
+</details>

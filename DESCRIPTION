@@ -12,6 +12,7 @@ URL: https://r4ds.github.io/bookclub-mnetanal, https://github.com/r4ds/bookclub-
 Depends:
     R (>= 3.1.0)
 Imports: 
+    DataEditR,
     blockmodels,
     bookdown,
     ggraph,

@@ -1,13 +1,89 @@
 # Your First Network
 
-**Learning objectives:**
+## Creating a project
 
-- THESE ARE NICE TO HAVE BUT NOT ABSOLUTELY NECESSARY
+Show a quick demo.
 
-## SLIDE 1
+## Loading data into R
 
-- ADD SLIDES AS SECTIONS (`##`).
-- TRY TO KEEP THEM RELATIVELY SLIDE-LIKE; THESE ARE NOTES, NOT THE BOOK ITSELF.
+For reading large datasets, use one of the options below
+
+[vroom](https://www.tidyverse.org/blog/2019/05/vroom-1-0-0/)
+
+[fread](https://rdatatable.gitlab.io/data.table/reference/fread.html)
+
+## Manual data entry
+
+-   Practically you'll never need, or advised, to enter values manually.
+-   You can edit dataframes interactively within R using one of the following options
+
+```{r, eval = FALSE}
+fix(mtcars)
+```
+
+```{r, eval = FALSE}
+DataEditR::data_edit(mtcars)
+```
+
+## From data to networks
+
+```{r}
+suppressPackageStartupMessages(library(igraph))
+```
+
+```{r}
+#edge list
+personA <- c("Mark", "Mark", "Peter", "Peter", "Bob", "Jill")
+personB <- c("Peter", "Jill", "Bob", "Aaron", "Jill", "Aaron")
+
+edgelist <- cbind(PersonA = personA, PersonB = personB)
+
+print(edgelist)
+
+#adjacency matrix
+adjacency <- matrix(c(0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0),
+                    nrow = 5,
+                    ncol = 5,
+                    dimnames = list(c("Mark", "Peter", "Bob", "Jill", "Aaron"),
+                                    c("Mark", "Peter", "Bob", "Jill", "Aaron")))
+
+print(adjacency)
+```
+
+Edge list into a network object.
+
+```{r}
+network <- graph.edgelist(edgelist, directed=FALSE)
+network
+```
+
+Adjacency matrix to network object.
+
+```{r}
+network_adj <-graph.adjacency(adjacency,mode = "undirected" )
+```
+
+-   `UN`: undirected
+-   `DN` : directed
+-   #vertices #edges
+
+Vertices of network
+
+```{r}
+V(network)
+```
+
+Edges of network
+
+```{r}
+E(network)
+```
+
+We can visualize the network using the plot() function.
+
+```{r}
+plot(network)
+```
 
 ## Meeting Videos
 

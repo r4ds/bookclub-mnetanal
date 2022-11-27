@@ -2,13 +2,373 @@
 
 **Learning objectives:**
 
-- THESE ARE NICE TO HAVE BUT NOT ABSOLUTELY NECESSARY
+-   How to change the aesthetics of network visualizations.
 
-## SLIDE 1
+## The Basics
 
-- ADD SLIDES AS SECTIONS (`##`).
-- TRY TO KEEP THEM RELATIVELY SLIDE-LIKE; THESE ARE NOTES, NOT THE BOOK ITSELF.
+```{r}
+suppressPackageStartupMessages(library(igraph))
+suppressPackageStartupMessages(library(tidygraph))
+suppressPackageStartupMessages(library(ggraph))
+suppressPackageStartupMessages(library(tidyverse))
+```
 
+Visualization and statistics are the primary tools at our disposable for conveying convincing stories about the structure and dynamics of the networks we study.
+
+Load data and create an igraph object from edgelist
+
+```{r}
+#read data
+data_url <- "https://raw.githubusercontent.com/mahoffman/social_network_analysis/master/Data/money_edgelist.csv"
+money_edgelist <- read_csv(data_url)
+#igraph
+moneyNetwork_ig <- money_edgelist %>% 
+  as.matrix() %>% 
+  graph_from_edgelist(directed=TRUE)
+#tidygraph
+moneyNetwork_tg <- as_tbl_graph(moneyNetwork_ig)
+```
+
+```{r}
+money_edgelist
+moneyNetwork_ig
+moneyNetwork_tg
+```
+
+Basic igraph plot
+
+```{r}
+set.seed(1992)
+plot(moneyNetwork_ig)
+```
+
+```{r}
+set.seed(1992)
+plot(moneyNetwork_ig)
+```
+
+Save "nice" layout
+
+```{r}
+nt_layout <- layout_nicely(moneyNetwork_ig)
+```
+
+Set the layout
+
+```{r}
+plot(moneyNetwork_ig, layout = nt_layout)
+```
+
+Basic ggraph plot
+
+```{r}
+ggraph(moneyNetwork_tg, layout = nt_layout) + 
+  geom_edge_link() + 
+  geom_node_point()
+```
+
+### Nodes
+
+We can control the size of the nodes
+
+```{r}
+plot(moneyNetwork_ig, layout = nt_layout, vertex.size = 50)
+plot(moneyNetwork_ig, layout = nt_layout, vertex.size = 10)
+```
+
+```{r}
+ggraph(moneyNetwork_tg, layout = nt_layout) + 
+  geom_edge_link() + 
+  geom_node_point(size = 5)
+ggraph(moneyNetwork_tg, layout = nt_layout) + 
+  geom_edge_link() + 
+  geom_node_point(size = 10)
+```
+
+We can also control the color of the nodes and their frames
+
+```{r}
+plot(moneyNetwork_ig,
+     layout = nt_layout,
+     vertex.size = 10,
+     vertex.color = "tomato",
+     vertex.frame.color = NA #remove the frames of the nodes
+     )
+```
+
+```{r}
+ggraph(moneyNetwork_tg, layout = nt_layout) + 
+  geom_edge_link() + 
+  geom_node_point(color = "tomato", size = 5)
+```
+
+Adjust label size with vertex.label.cex. We can adjust the color with vertex.label.color
+
+```{r}
+plot(moneyNetwork_ig,
+     layout = nt_layout,
+     vertex.size = 10,
+     vertex.color = "tomato",
+     vertex.frame.color = NA,
+     vertex.label.cex = .7, #adjust label size
+     vertex.label.color = "black" #adjust label color
+     )
+```
+
+```{r}
+ggraph(moneyNetwork_tg, layout = nt_layout) + 
+  geom_edge_link() + 
+  geom_node_point(color = "tomato", size = 5)+
+  geom_node_text(aes(label = name))
+```
+
+Alternatively, if we want to get rid of the labels, we can just set vertex.label to NA.
+
+```{r}
+plot(moneyNetwork_ig,
+     layout = nt_layout,
+     vertex.size = 10,
+     vertex.color = "tomato",
+     vertex.frame.color = NA,
+     vertex.label = NA#remove label
+     )
+```
+
+## Edges
+
+Adjust edges size and curvature to give them a nicer aesthetic
+
+```{r}
+plot(moneyNetwork_ig,
+     layout = nt_layout,
+     vertex.size = 10,
+     vertex.color = "tomato",
+     vertex.frame.color = NA,
+     vertex.label.cex = .7,
+     vertex.label = NA,
+     edge.curved = 0.1, #curvature of the arrow(higher value = more curvature; 0=no curvature)
+     edge.arrow.size = 0.3, #size of arrow head
+     edge.width = .7 #width of the edge
+     )
+```
+
+```{r}
+ggraph(moneyNetwork_tg, layout = nt_layout) + 
+  geom_edge_arc(strength = 0.1) + 
+  geom_node_point(color = "tomato", size = 5)+
+  geom_node_text(aes(label = name))
+
+ggraph(moneyNetwork_tg, layout = nt_layout) + 
+  geom_edge_bend(strength = 0.2) + 
+  geom_node_point(color = "tomato", size = 5)+
+  geom_node_text(aes(label = name))
+
+ggraph(moneyNetwork_tg, layout = nt_layout) + 
+  geom_edge_diagonal(strength = 0.7) + 
+  geom_node_point(color = "tomato", size = 5)+
+  geom_node_text(aes(label = name))
+```
+
+```{r}
+ggraph(moneyNetwork_tg, layout = nt_layout) + 
+  geom_edge_link(aes(start_cap = label_rect(node1.name),
+                     end_cap = label_rect(node2.name)),
+                 color = "grey60",
+                 strength = 0.1,
+                 width = 1,
+                 arrow = arrow(angle = 15,
+                               length=unit(0.5,"cm"),
+                               ends="first",
+                               type = "closed")) + 
+  geom_node_point(color = "tomato", size = 5)+
+  geom_node_text(aes(label = name))
+```
+
+```{r}
+
+ggraph(moneyNetwork_tg, layout = nt_layout) + 
+  geom_edge_fan(width = 1,
+                aes(alpha = after_stat(index)),
+                show.legend = FALSE) + 
+  geom_node_point(color = "tomato", size = 5)+
+  geom_node_text(aes(label = name))
+```
+
+for more tricks check this notebook <https://rpubs.com/jmmcclu3/865821>
+
+## Layouts
+
+![source: https://www.data-imaginist.com/2017/ggraph-introduction-layouts/](https://d33wubrfki0l68.cloudfront.net/756daa22f3690a4073ce41607ef98bf5536035a4/1f06e/post/2017-02-06-ggraph-introduction-layouts_files/figure-html/unnamed-chunk-12.gif)
+
+-- A network's layout determines the nodes' positions in the plot. -- All layouts try to minimize the number of edges that cross.
+
+The author states that he usually uses either the Kamada Kawai (`igraph::layout.kamada.kawai()`; `ggraph:::layout_tbl_graph_igraph()`) algorithm or the Fruchterman Reingold algorithm.
+
+**Kamada Kawai**
+
+```{r}
+# first we run the layout function on our graph
+kamadaLayout <- layout.kamada.kawai(moneyNetwork_ig)
+
+# and then we change the default layout setting to equal the layout we generated above
+plot(moneyNetwork_ig,
+     layout = kamadaLayout,
+     vertex.size = 10,
+     vertex.color = "tomato",
+     vertex.frame.color = NA,
+     vertex.label.cex = .7,
+     vertex.label = NA,
+     edge.curved = .1,
+     edge.arrow.size = .3,
+     edge.width = .7)
+```
+
+```{r}
+ggraph(moneyNetwork_tg, layout = kamadaLayout) + 
+  geom_edge_fan(width = 1,
+                aes(alpha = after_stat(index)),
+                show.legend = FALSE) + 
+  geom_node_point(color = "tomato", size = 5)+
+  geom_node_text(aes(label = name))
+```
+
+The layout can be directly stated in ggraph call
+
+```{r}
+ggraph(moneyNetwork_tg, layout = "kk") + #kamada.kawai
+  geom_edge_fan(width = 1,
+                aes(alpha = after_stat(index)),
+                show.legend = FALSE) + 
+  geom_node_point(color = "tomato", size = 5)+
+  geom_node_text(aes(label = name))
+```
+
+Check for layouts available ggraph from igraph ?ggraph:::layout_tbl_graph_igraph()
+
+## Adding attributes to a network object
+
+Load node attributes (metadata)
+
+```{r}
+data_url2 <- "https://raw.githubusercontent.com/mahoffman/social_network_analysis/master/Data/attribute_df.csv"
+attributes <- read_csv(data_url2)
+head(attributes)
+```
+
+add attributes to the igraph object
+
+```{r}
+moneyNetwork_ig <- graph_from_data_frame(money_edgelist,
+                                      directed = T,
+                                      vertices = attributes)
+moneyNetwork_ig
+
+V(moneyNetwork_ig)$Gender 
+```
+
+and the ggraph object
+
+```{r}
+moneyNetwork_tg <- tbl_graph(edges = money_edgelist,
+                             directed = T,
+                             nodes = attributes)
+moneyNetwork_tg
+```
+
+Let's set a layout for the network
+
+```{r}
+kk_layout <- layout.kamada.kawai(moneyNetwork_ig)
+```
+
+## Plotting based on attributes
+
+```{r}
+V(moneyNetwork_ig)$color <- ifelse(V(moneyNetwork_ig)$Gender == "Male", "dodgerblue3","seagreen")
+```
+
+```{r}
+plot(moneyNetwork_ig,
+     layout = kk_layout,
+     vertex.size = 10,
+     vertex.frame.color = "black", 
+     vertex.label.cex = .7, 
+     vertex.label = NA, 
+     edge.curved = .1, 
+     edge.arrow.size = .3)
+```
+
+```{r}
+ggraph(moneyNetwork_tg, layout = kk_layout) + #kamada.kawai
+  geom_edge_fan(width = 1,
+                aes(alpha = after_stat(index)),
+                show.legend = FALSE) + 
+  geom_node_point(aes(color = Gender), size = 5)+
+  scale_color_manual(values = c(Female = "seagreen", Male = "dodgerblue3"))
+```
+
+Now let's try role. First, I reset color. There are four roles (Father, Mother, Son, Daughter), so we need a few more ifelse statements to code for all of them.
+
+```{r}
+V(moneyNetwork_ig)$color <- NA
+role_ig <- V(moneyNetwork_ig)$Role
+V(moneyNetwork_ig)$color <- case_when(
+ role_ig == "Father" ~ "burlywood1",
+  role_ig == "Mother" ~ "seagreen",
+  role_ig == "Son" ~ "grey70",
+  TRUE ~ "tomato")
+
+plot(moneyNetwork_ig,
+     layout = kk_layout,
+     vertex.size = 10,
+     vertex.label.cex = .7,
+     vertex.label = NA,
+     edge.curved = .1, 
+     vertex.frame.color = "black",
+     edge.arrow.size = .3,
+     edge.width = .7,
+     edge.color = "grey30")
+```
+
+```{r}
+ggraph(moneyNetwork_tg, layout = kk_layout) + #kamada.kawai
+  geom_edge_fan(width = 1,
+                aes(alpha = after_stat(index)),
+                show.legend = FALSE) + 
+  geom_node_point(aes(color = Role), size = 5)+
+  scale_color_manual(values = c(Father = "burlywood1",
+                                Mother = "seagreen",
+                                Son = "grey70",
+                                Daughter = "tomato"))
+```
+
+Last but not least, let's adjust the sizes of the nodes so that they reflect differences in age. We can set node size to be 1/5th of the node's age with the code below. Simple, but effective. It looks like the oldest nodes give to the most people.
+
+```{r}
+V(moneyNetwork_ig)$size = V(moneyNetwork_ig)$Age/5
+
+plot(moneyNetwork_ig, 
+     layout = kk_layout,
+     vertex.label.cex = .7,
+     vertex.label = NA,
+     edge.curved = .1,
+     vertex.frame.color = "black",
+     edge.arrow.size = .3, 
+     edge.width = .7,
+     edge.color = "grey30")
+```
+```{r}
+ggraph(moneyNetwork_tg, layout = kk_layout) + #kamada.kawai
+  geom_edge_fan(width = 1,
+                aes(alpha = after_stat(index)),
+                show.legend = FALSE) + 
+  geom_node_point(aes(color = Role,
+                      size = Age/5))+
+  scale_color_manual(values = c(Father = "burlywood1",
+                                Mother = "seagreen",
+                                Son = "grey70",
+                                Daughter = "tomato"))
+```
 ## Meeting Videos
 
 ### Cohort 1
@@ -16,9 +376,13 @@
 `r knitr::include_url("https://www.youtube.com/embed/URL")`
 
 <details>
-<summary> Meeting chat log </summary>
 
-```
-LOG
-```
+<summary>
+
+Meeting chat log
+
+</summary>
+
+    LOG
+
 </details>

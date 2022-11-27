@@ -382,7 +382,7 @@ ggraph(moneyNetwork_tg, layout = kk_layout) + #kamada.kawai
 Meeting chat log
 
 </summary>
-
-    LOG
-
+```
+LOG
+```
 </details>

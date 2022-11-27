@@ -1,13 +1,159 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
 # Ego Networks
 
 **Learning objectives:**
 
-- THESE ARE NICE TO HAVE BUT NOT ABSOLUTELY NECESSARY
+-   Measures of network density and heterogeneity.
+-   Strategies to analyze many networks all at once.
+-   Learn about ego network
+-   Network size and density (maybe)
 
-## SLIDE 1
+## 
 
-- ADD SLIDES AS SECTIONS (`##`).
-- TRY TO KEEP THEM RELATIVELY SLIDE-LIKE; THESE ARE NOTES, NOT THE BOOK ITSELF.
+Load libraries.
+
+```{r message=FALSE}
+library(igraph)
+library(tidyverse)
+```
+
+We begin by reading in the data from the GSS network module 2004.
+
+```{r}
+gss_url <-"https://raw.githubusercontent.com/mahoffman/stanford_networks/main/data/gss_local_nets.csv"
+gss <- read_csv(gss_url) 
+```
+
+Let's have a broad overview of the data
+
+```{r}
+visdat::vis_dat(gss,sort_type = FALSE)+
+  labs(title = "GSS data",
+       subtitle = glue::glue("#rows = {nrow(gss)}, #columns = {ncol(gss)} "))
+```
+
+The first five concern the attributes of a given respondent:
+
+-   sex
+
+-   age
+
+-   race
+
+-   partyid
+
+-   religion.
+
+```{r}
+atrr_n <- 5
+visdat::vis_dat(gss[,1:atrr_n],sort_type = FALSE)+
+  labs(title = "GSS data: attributes of a given respondent",
+       subtitle = glue::glue("#rows = {nrow(gss[,1:atrr_n])}, #columns = {ncol(gss[,1:atrr_n])} "))
+```
+
+The basic idea of the module was to ask people about up to five others with whom they discussed "important matters" in the past six months. The respondents reported the number of people whom they discussed "important matters":
+
+-   numgiven: the number of others whom they repondents discussed important matters with.
+
+-   "close" columns: The relationship between others (e.g., close12 is the closeness of person 1 to person 2, for each respondent).
+
+-   "sex, race, age" columns: attributes of each of the others (n=5) in the ego network. (3\*5)
+
+```{r}
+net_n <- 41
+visdat::vis_dat(gss[,(atrr_n+1):net_n],sort_type = FALSE)+
+  labs(title = "GSS data: ''netwok' part",
+       subtitle = glue::glue("#rows = {nrow(gss[,(atrr_n+1):net_n])}, #columns = {ncol(gss[,(atrr_n+1):net_n])} "))
+```
+
+To do so, we have to first turn the variables close12 through close45 into an edge list, one for each respondent.
+
+```{r}
+ties <- gss %>%
+  dplyr::select(starts_with("close"))
+head(ties)
+```
+
+A function, which uses the code above to turn any row in the ties data set into an ego network, and then apply that function to every row in the data
+
+```{r}
+make_ego_nets <- function(tie){
+  # make the matrix
+  mat = matrix(nrow = 5, ncol = 5)
+  # assign the tie values to the lower triangle
+  mat[lower.tri(mat)] <- as.numeric(tie)
+  # symmetrize
+  mat[upper.tri(mat)] = t(mat)[upper.tri(mat)]
+  # identify missing values
+  na_vals <- is.na(mat)
+  # identify rows where all values are missing
+  non_missing_rows <- rowSums(na_vals) < nrow(mat)
+  
+  # if any rows 
+  if(sum(!non_missing_rows) > 0){
+    mat <- mat[non_missing_rows,non_missing_rows]
+  }
+  diag(mat) <- 0
+  ego_net <- graph.adjacency(mat, mode = "undirected", weighted = T)
+  return(ego_net)
+}
+
+```
+
+A simpler approach
+
+```{r}
+make_ego_nets_simple <- function(tie){
+  #get the all possible links among others
+  tie <- tie %>% unlist
+  #remove missing links
+  tie <- tie[!is.na(tie)]
+  #remove zero links
+  tie <- tie[tie!=0]
+  #get the identity of linked pairs
+  others <- str_extract(names(tie), "[0-9]+")
+  #split the linked others
+  others_link <- str_split(others, "",simplify = TRUE) %>% as.data.frame
+  #make edge list of others
+  others_link <- cbind(others_link, tie)
+  #ego graph with 
+  graph_from_data_frame(others_link,
+                        directed=FALSE)
+}
+```
+
+Clean ties before creating the networks
+
+```{r}
+#set zero links as missing links
+ties[ties==0] <- NA
+#repondents where all links among others are missing
+others_missing <- rowSums(is.na(ties))==ncol(ties)
+
+#remove any respondent that falls in any of the above
+ties <- ties[!(others_missing),]
+```
+
+Compare the two functions
+
+```{r}
+ego_nets <- apply(ties,1,make_ego_nets)
+ego_nets_simple <- apply(ties,1,make_ego_nets_simple)
+
+plot(ego_nets[[1]])
+plot(ego_nets_simple[[1]])
+```
+
+Not the same ! Where did thing go wrong?
+
+```{r}
+ties[1,]
+```
 
 ## Meeting Videos
 
@@ -16,9 +162,13 @@
 `r knitr::include_url("https://www.youtube.com/embed/URL")`
 
 <details>
-<summary> Meeting chat log </summary>
 
-```
-LOG
-```
+<summary>
+
+Meeting chat log
+
+</summary>
+
+    LOG
+
 </details>

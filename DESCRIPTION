@@ -16,6 +16,7 @@ Imports:
     blockmodels,
     bookdown,
     ggraph,
+    glue,
     gutenbergr,
     igraph,
     intergraph,
@@ -29,6 +30,7 @@ Imports:
     textmineR,
     tidygraph,
     tidytext,
-    tidyverse
+    tidyverse,
+    visdat
 Remotes:
     ropensci/gutenbergr

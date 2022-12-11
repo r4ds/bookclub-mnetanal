@@ -1,13 +1,109 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: inline
+---
 # Calculating Network Size and Density
 
 **Learning objectives:**
 
-- THESE ARE NICE TO HAVE BUT NOT ABSOLUTELY NECESSARY
+- Measure graph density.
 
-## SLIDE 1
+Load libraries
+```{r message=FALSE}
+library(igraph)
+library(tidyverse)
+```
 
-- ADD SLIDES AS SECTIONS (`##`).
-- TRY TO KEEP THEM RELATIVELY SLIDE-LIKE; THESE ARE NOTES, NOT THE BOOK ITSELF.
+## Load data
+
+Regenerate data from previous chapter. (code below copied from previous chapter)
+```{r}
+#read data
+gss_url <-"https://raw.githubusercontent.com/mahoffman/stanford_networks/main/data/gss_local_nets.csv"
+gss <- read_csv(gss_url) 
+
+#subset ties data
+ties <- gss %>%
+  dplyr::select(starts_with("close"))
+
+#set zero links as missing links
+ties[ties==0] <- NA
+#repondents where all links among others are missing
+others_missing <- rowSums(is.na(ties))==ncol(ties)
+#remove any respondent that falls in any of the above
+ties <- ties[!(others_missing),]
+
+#make a function to generate a network of ties
+make_ego_nets_simple <- function(tie){
+  #get the all possible links among others
+  tie <- tie %>% unlist
+  #remove missing links
+  tie <- tie[!is.na(tie)]
+  #remove zero links
+  tie <- tie[tie!=0]
+  #get the identity of linked pairs
+  others <- str_extract(names(tie), "[0-9]+")
+  #split the linked others
+  others_link <- str_split(others, "",simplify = TRUE) %>% as.data.frame
+  #make edge list of others
+  others_link <- cbind(others_link, tie)
+  #ego graph with 
+  graph_from_data_frame(others_link,
+                        directed=FALSE)
+}
+#get all graphs
+ego_nets_simple <- apply(ties,1,make_ego_nets_simple)
+#
+ties[1,]
+plot(ego_nets_simple[[1]])
+
+```
+
+## Number of vertices
+
+Number of vertices
+```{r}
+network_sizes <- lapply(ego_nets_simple, vcount)
+head(network_sizes)
+```
+
+```{r}
+network_sizes <- unlist(network_sizes)
+mean(network_sizes, na.rm = T)
+```
+
+```{r}
+hist(network_sizes, main = "Histogram of Ego Network Sizes", xlab = "Network Size")
+
+```
+
+## Number of edges
+
+Number of edges
+```{r}
+network_edge_counts <- lapply(ego_nets_simple, ecount)
+network_edge_counts <- unlist(network_edge_counts)
+hist(network_edge_counts, main = "Histogram of Ego Network Edge Counts", xlab = "# of Edges")
+```
+
+```{r}
+random_ego_net <- ego_nets_simple[[1]]
+ecount(random_ego_net)/((vcount(random_ego_net) * (vcount(random_ego_net) - 1))/2)
+
+```
+
+## Density 
+
+From the documentation of `graph.density()` "The density of a graph is the ratio of the number of edges and the number of possible edges."
+```{r}
+densities <- lapply(ego_nets_simple, graph.density)
+densities <- unlist(densities)
+```
+
+```{r}
+hist(densities)
+```
 
 ## Meeting Videos
 

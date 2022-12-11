@@ -1,13 +1,190 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: inline
+---
+
 # Affiliation Data
 
 **Learning objectives:**
 
-- THESE ARE NICE TO HAVE BUT NOT ABSOLUTELY NECESSARY
+-   THESE ARE NICE TO HAVE BUT NOT ABSOLUTELY NECESSARY
 
-## SLIDE 1
+```{r message=TRUE, warning=TRUE}
+library(tidyverse)
+library(tidygraph)
+library(ggraph)
+library(igraph)
+library(nberwp)
+library(nberwp)
+```
 
-- ADD SLIDES AS SECTIONS (`##`).
-- TRY TO KEEP THEM RELATIVELY SLIDE-LIKE; THESE ARE NOTES, NOT THE BOOK ITSELF.
+## Indirect connections
+
+Linking individuals indirectly based on shared features.
+
+Example: Affiliation data.
+
+```{r}
+name <- c("Leo", "Clement", "Palla", "Filippo")
+class1 <- c("Biostatistics","Islamic Civ", "Calc 1", "Linear Algebra")
+class2 <- c("Chemistry", "The Modern World-System", "Calc 2", "Social Networks")
+class3 <- c("Linear Algebra", "Exile and Diaspora", "Linear Algebra", "The Modern World-System")
+(classes_data <- bind_cols(name = name,
+                           class1 = class1,
+                           class2 = class2,
+                           class3 = class3))
+```
+
+Get edgelist by converting from wide to long format
+
+```{r}
+(classes_data <- classes_data %>%
+  pivot_longer(-name,
+               names_to = NULL, #discard colum names
+               values_to = "classes"))
+```
+
+Convert edgelist into an incidence matrix.
+
+```{r}
+(classesMatrix <- classes_data %>% 
+  sjmisc::flat_table() %>% 
+  as.matrix())
+```
+
+In an incidence matrix, the rows are of one class of node, while columns are of another. The rows are generally people who are affiliated with groups in the columns.
+
+Using the get.incidence() function will turn our matrix into a bipartite network.
+
+```{r}
+(classesNet_tg <- graph.incidence(classesMatrix,
+                                 mode = c("all")#all mutual edges 
+                                 ) %>% 
+  as_tbl_graph())
+```
+
+```{r}
+(classesNet_tg <- classesNet_tg %>% 
+  mutate(type = ifelse(type, "Affiliations", "Individuals")))
+```
+
+```{r}
+ggraph(classesNet_tg,  layout = 'kk') + 
+  geom_edge_link() + 
+  geom_node_label(aes(label = name, fill = type))+
+  guides(fill = guide_legend(
+    override.aes = aes(size = 5,
+                       label = "")
+    ))+
+  theme(legend.position = c(0.1,0.1),
+        legend.text = element_text(size = 10))
+```
+
+
+### Unipartite Projection
+
+Using igraph `bipartite.projection`
+
+```{r}
+graph.incidence(classesMatrix,
+                mode = c("all")#all mutual edges 
+                ) %>% 
+  bipartite.projection(which = "false") #select the projection of interest. Here it's students
+```
+
+The mathematical operation to make a person-to-person projection is to multiply the initial matrix by its transpose. In R that looks like:
+```{r}
+personMatrix <- classesMatrix %*% t(classesMatrix)
+```
+
+
+The diagonal of this new matrix tells us the number of groups each person is affiliated with, but we set it to 0 using the ?diag function.
+
+```{r}
+number_of_classes_taken = diag(personMatrix)
+diag(personMatrix) <- 0 
+```
+
+```{r}
+personMatrix %>%
+  graph.adjacency() %>% 
+  as_tbl_graph() %>% 
+  ggraph( layout = 'kk') + 
+  geom_edge_link() + 
+  geom_node_label(aes(label = name))
+```
+
+To get the group-to-group matrix, we multiply the transpose by the initial ma
+
+trix (reverse!)
+
+```{r}
+groupMatrix = t(classesMatrix) %*% classesMatrix
+number_of_students <- diag(groupMatrix)
+diag(groupMatrix) <- 0 # we again set it to 0
+```
+
+```{r}
+
+groupMatrix %>%
+  graph.adjacency() %>% 
+  as_tbl_graph() %>% 
+  ggraph( layout = 'kk') + 
+  geom_edge_link() + 
+  geom_node_label(aes(label = name))
+```
+
+## Tripartite network analysis?
+
+How to add the respective department of each class to the story?
+
+```{r}
+classes_to_departments <- data.frame(class = c("Biostatistics","Islamic Civ", "Calc 1", "Linear Algebra", "Chemistry", "The Modern World-System", "Calc 2", "Social Networks", "Exile and Diaspora"), department = c("Math", "History", "Math", "Math", "Chemistry", "Sociology", "Math", "Sociology", "History"), stringsAsFactors = F)
+classes_to_departments_matrix <- table(classes_to_departments)
+class(classes_to_departments_matrix) <- "matrix"  
+```
+
+Now following the paper on tripartite structural analysis, we can multiply the transpose of this matrix by the transpose of classesMatrix to trace links between people and departments!
+
+```{r}
+people_to_departments <- t(classes_to_departments_matrix) %*% t(classesMatrix)
+```
+
+We can graph this matrix and analyze it like a bipartite graph.
+
+```{r}
+people_to_departments %>%
+  graph.incidence() %>% 
+  as_tbl_graph() %>% 
+  ggraph( layout = 'kk') + 
+  geom_edge_link() + 
+  geom_node_label(aes(label = name, fill = type))
+```
+
+### Lab
+
+```{r}
+data(paper_authors)
+data(authors)
+data(papers)
+papers <- papers %>%
+  filter(year >= 2016)
+paper_authors <- paper_authors %>% 
+  filter(paper %in% papers$paper)
+paper_authors <- paper_authors %>% 
+  mutate(author = authors$user_nber[match(paper_authors$author , authors$author)])
+```
+
+```{r eval = FALSE}
+paper_authors %>% 
+  sjmisc::flat_table() %>% 
+  graph.incidence() %>% 
+  as_tbl_graph() %>% 
+  ggraph( layout = 'kk') + 
+  geom_edge_link() + 
+  geom_node_poin()
+```
 
 ## Meeting Videos
 
@@ -16,9 +193,13 @@
 `r knitr::include_url("https://www.youtube.com/embed/URL")`
 
 <details>
-<summary> Meeting chat log </summary>
 
-```
-LOG
-```
+<summary>
+
+Meeting chat log
+
+</summary>
+
+    LOG
+
 </details>

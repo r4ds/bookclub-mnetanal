@@ -31,6 +31,7 @@ Imports:
     tidygraph,
     tidytext,
     tidyverse,
-    visdat
+    visdat,
+    sjmisc
 Remotes:
     ropensci/gutenbergr

@@ -154,7 +154,8 @@ people_to_departments <- t(classes_to_departments_matrix) %*% t(classesMatrix)
 We can graph this matrix and analyze it like a bipartite graph.
 
 ```{r}
-people_to_departments_net %>%
+people_to_departments %>%
+  graph.incidence() %>% 
   as_tbl_graph() %>% 
   ggraph( layout = 'kk') + 
   geom_edge_link() + 

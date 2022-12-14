@@ -33,5 +33,3 @@ Imports:
     tidyverse,
     visdat,
     sjmisc
-Remotes:
-    ropensci/gutenbergr

@@ -1,13 +1,214 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
 # Transitivity, Structural Balance, and Hierarchy
 
 **Learning objectives:**
 
-- THESE ARE NICE TO HAVE BUT NOT ABSOLUTELY NECESSARY
+-   Understand microfoundations (motifs) of networks (dyads, triads).
+-   Learn the basic functions for measuring reciprocity, transitivity, the triad census,
 
-## SLIDE 1
+```{r message=TRUE, warning=TRUE}
+library(tidyverse)
+library(tidygraph)
+library(ggraph)
+library(igraph)
+library(nberwp)
+library(nberwp)
+```
 
-- ADD SLIDES AS SECTIONS (`##`).
-- TRY TO KEEP THEM RELATIVELY SLIDE-LIKE; THESE ARE NOTES, NOT THE BOOK ITSELF.
+## Load the data
+
+```{r}
+# read in the edge list from our github
+el <- read.table("https://raw.githubusercontent.com/mahoffman/stanford_networks/main/data/comm59.dat.txt", header = T)
+# Read in attributes from our github
+attributes <- read.table("https://raw.githubusercontent.com/mahoffman/stanford_networks/main/data/comm59_att.dat.txt", header = T)
+# add an ID column
+attributes$ID <- 1:nrow(attributes)
+```
+
+```{r}
+# Indexing data so that you only put in certain columns
+el_no_weight <- el[,1:2] # We will ignore the ranking variable for now.
+colnames(el_no_weight) <- c("from", "to")
+
+el_no_weight <- as.matrix(el_no_weight) # igraph requires a matrix
+
+# convert ids to characters so they are preserved as names
+el_no_weight <- apply(el_no_weight,2,as.character)
+
+# Graph the network
+net59 <- graph.edgelist(el_no_weight, directed = T)
+
+# Finally, add attributes  
+# First link vertex names to their place in the attribute dataset
+linked_ids <- match(V(net59)$name, attributes$ID)
+
+# Then we can use that to assign a variable to each user in the network
+V(net59)$race <- attributes$race[linked_ids]
+V(net59)$sex <- attributes$sex[linked_ids]
+V(net59)$grade <- attributes$grade[linked_ids]
+V(net59)$school <- attributes$school[linked_ids]
+
+net59
+```
+
+## The Dyad
+
+-   large social networks can be broken down into their constituent parts called "motifs".
+-   The most basic motif consists of only two nodes and is called a dyad.
+-   A dyad can have different configurations based on the graph type :
+    -   Undirected: connected or disconnected.
+    -   Directed: mutual, assymetric, and null.
+
+Transitivity:
+
+-   Number of existing triplets (triangles x 3) divided by all possible triplets.
+
+-   A measure of the tendency of the nodes to cluster together.
+
+-   "A friend of a friend is a friend"
+
+-   related to clustering coefficient and modularity
+
+Since edges in a network signify the presence or absence of dyadic relations, we can think of network density as a measure of the proportion of present dyads over the number of all possible dyads.
+
+```{r}
+graph.density(net59)
+```
+
+-   In directed graphs, an edge is reciprocal when ego and alter send each other ties.
+-   Reciprocity is measures the tendency for edges to be reciprocal across the whole network.
+
+```{r}
+reciprocity(net59)
+```
+
+3- Generating a random graph for comparison - Random graph is characterized by chance of a tie is determined by chance and independent from one another. - Random graph can be used as a null model to test our data.
+
+In an erdos.renyi.graph, each edge has the same probability of being created
+
+```{r}
+#igraph has a fast and easy function for generating random graphs.
+?erdos.renyi.game
+```
+
+Let's calculate the density and number of nodes in our graph.
+
+```{r}
+net59_n <- vcount(net59)
+net59_density <- graph.density(net59)
+```
+
+Then use them as parameters to generate a random graph
+
+```{r}
+random_graph <- erdos.renyi.game(n = net59_n,# n is the number of nodes
+                                 p.or.m = net59_density,#probability of drawing an edge
+                                 directed = TRUE) # whether the network is directed or not
+
+```
+
+```{r}
+plot(random_graph,  
+     vertex.size = 2, 
+     vertex.label = NA, 
+     edge.curved = .1, 
+     vertex.color = "tomato", 
+     edge.arrow.size = .1, 
+     edge.width = .5, 
+     edge.color = "grey60")
+```
+
+Let's compare the reciprocity of the random graph to our graph
+
+```{r}
+reciprocity(random_graph)
+reciprocity(net59)
+```
+
+## The Triad
+
+-   Triads consist of three nodes and are therefore more complex than dyads, with more possible arrangements.
+-   Triad census calculates how many triads there are of each type
+-   In an undirected graph, there are 8 possible triads
+-   In a directed graph, there are 16 possible triads
+
+![](https://bookdown.org/markhoff/social_network_analysis/Images/triad_census.jpg)
+
+## Calculating a triad census
+
+```{r}
+triad.census(net59)
+
+```
+
+```{r}
+triad.census(random_graph)
+
+```
+
+## Random graphs galore
+
+One problem is that we are basing our analysis on a single random graph. Because edges are drawn randomly, there is a lot of variation in the structure of random graphs, especially when the number of nodes in the graph is small (less than one thousand).
+
+What we really want is a distribution of random graphs and their triad censuses, against which our own could be compared. So let's generate one hundred random graphs, and create a distribution of random graph triad censuses and see where our graph lies on that distribution
+
+```{r}
+trial <- vector("list", 100) # this creates a list with 100 spaces to store things.  We will store each result here. 
+
+trial <- lapply(seq(100), function(x){
+  random_graph <- erdos.renyi.game(n = net59_n, p.or.m = net59_density, directed = TRUE) 
+  triad.census(random_graph)
+})
+
+
+trial_df <- do.call("rbind", trial) # We can use the do.call and "rbind" functions together to combine all of the results into a matrix, where each row is one of our trials
+
+colnames(trial_df) <- c("003", "012", "102", "021D", "021U", "021C", "111D", "111U", "030T", "030C", "201", "120D", "120U", "120C", "210", "300") # It is worth naming the columns too.
+
+trial_df_w_observed <- rbind(trial_df, as.numeric(triad.census(net59))) # add in the observed results
+```
+
+```{r}
+# First, standardize all of the columns by dividing each of their values by the largest value in that column, so that each will be on a similar scale (0 to 1), we can visualize them meaningfully 
+trial_df_w_observed <- as.data.frame(trial_df_w_observed)
+
+trial_df_w_observed[,1:ncol(trial_df_w_observed)] <- sapply(trial_df_w_observed[,1:length(trial_df_w_observed)], function(x) x/max(x))
+
+# Then split the observed from the simulation results
+trial_df <- as.data.frame(trial_df_w_observed[1:100,])
+observed <- as.numeric(trial_df_w_observed[101,])
+
+# Summarize the simulation results and add the observed data set back in for comparison
+summarized_stats <- data.frame(TriadType = colnames(trial_df), 
+                               Means = sapply(trial_df, mean), 
+                               LowerCI = sapply(trial_df, function(x) quantile(x, 0.05)),
+                               UpperCI = sapply(trial_df, function(x) quantile(x, 0.95)), 
+                               Observed = observed) 
+
+summarized_stats
+```
+
+```{r}
+ggplot(summarized_stats) + 
+    geom_point(aes(x=TriadType, y=Means, colour=TriadType)) + 
+    geom_errorbar(aes(x = TriadType, ymin=LowerCI, ymax=UpperCI, colour=TriadType), width=.1) +
+    geom_point(aes(x=TriadType, y=Observed, colour="Observed")) +
+    coord_flip()
+```
+
+## Producing a tau statistic
+
+```{r}
+weighting_scheme <- c(0,0,0,1,1,-1,0,0,1,0,0,1,1,0,0,0)
+
+sum(triad.census(net59) * weighting_scheme)
+```
 
 ## Meeting Videos
 
@@ -16,9 +217,13 @@
 `r knitr::include_url("https://www.youtube.com/embed/URL")`
 
 <details>
-<summary> Meeting chat log </summary>
 
-```
-LOG
-```
+<summary>
+
+Meeting chat log
+
+</summary>
+
+    LOG
+
 </details>

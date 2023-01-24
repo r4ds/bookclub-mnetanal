@@ -1,9 +1,3 @@
----
-output: html_document
-editor_options: 
-  chunk_output_type: console
----
-
 # Transitivity, Structural Balance, and Hierarchy
 
 **Learning objectives:**
@@ -16,7 +10,6 @@ library(tidyverse)
 library(tidygraph)
 library(ggraph)
 library(igraph)
-library(nberwp)
 library(nberwp)
 ```
 

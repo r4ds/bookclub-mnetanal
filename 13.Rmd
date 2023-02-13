@@ -2,12 +2,85 @@
 
 **Learning objectives:**
 
-- THESE ARE NICE TO HAVE BUT NOT ABSOLUTELY NECESSARY
+-   Simulation of different network architectures.
+-   Identifying bridging ties and articulation points.
 
-## SLIDE 1
+## It's a small world after all
 
-- ADD SLIDES AS SECTIONS (`##`).
-- TRY TO KEEP THEM RELATIVELY SLIDE-LIKE; THESE ARE NOTES, NOT THE BOOK ITSELF.
+-   Real-world social networks tend to be "small worlds".
+
+-   In a small world architecture nodes belong to well defined clusters that are connected to one another.
+
+    -   Pairs exhibit few long paths and many short paths facilitated by hubs.
+
+    -   Highly clustered though proximal on average.
+
+-   "Six degrees of separation" <https://www.sixdegreesofwikipedia.com/>
+
+-   An extreme network structure is "caveman structure" of very tight and small clusters loosely connected to one another.
+
+    ![A cave man structure of 100 people and 20 communites](images/paste-80A021C7.png){alt="A cave man structure of 100 people and 20 communites" width="441"}
+
+    -   Low density (connected edges out of all possible edges)
+
+    -   High transitivity (clustering tendency)
+
+    -   High path length AKA degrees of separation (\>10) (average number of edges connecting two random nodes)
+
+    -   Large diameter (shortest path between two furthest nodes/ number of edges separate any two nodes on average).
+
+![](images/paste-99529CFE.png){width="448"}
+
+How can one decrease the average path length of the caveman network? In other words, how to obtain a "small world" starting from a "cave man"? Bring it closer to a "random network"!
+
+Randomly rewiring the network while maintaining the average node degree results is edges that cut through the network!\
+![](images/paste-D577A941.png){width="458"}
+
+The more random rewiring the more similar it gets to a random network.
+
+![](images/paste-B1E5B081.png){width="485"}
+
+![](images/paste-AED25185.png){width="487"}
+
+How does small world networks compare to other structures?
+
+![Neal, Z. (2018).](https://media.springernature.com/lw685/springer-static/image/art%253A10.1007%252Fs11067-018-9417-y/MediaObjects/11067_2018_9417_Fig1_HTML.png)
+
+![](https://media.springernature.com/full/springer-static/image/art%253A10.1038%252F30918/MediaObjects/41586_1998_Article_BF30918_Fig1_HTML.gif){width="553"}
+
+![Watts, D., Strogatz, S. Nature (1998)](https://media.springernature.com/full/springer-static/image/art%253A10.1038%252F30918/MediaObjects/41586_1998_Article_BF30918_Fig1_HTML.gif){width="553"}
+
+## Measuring connectivity of networks
+
+-   Br(i/e)dge: The only tie that connects two otherwise distinct components in a network.\
+    [![](https://codeforces.com/predownloaded/dc/3a/dc3aefd59eb8e4e0f48598e9a4dd6e65b8ecab01.png){width="435"}](https://www.google.com/url?sa=i&url=https%3A%2F%2Fcodeforces.com%2Fblog%2Fentry%2F71146&psig=AOvVaw10MZxmI4G5IzLPdIssxHYQ&ust=1676302352409000&source=images&cd=vfe&ved=0CBEQjhxqFwoTCKCpsYSnkP0CFQAAAAAdAAAAABB5)
+
+-   Local br(i/e)dge: The tie that greatly reduces the distance -tie range- between two modules.\
+    [![](https://image1.slideserve.com/1668807/strong-weak-ties-l.jpg)](https://www.slideserve.com/nico/chapter-3-strong-and-weak-ties)
+
+In a network were connections are redundant there is an absence of bridges.
+This is the case for small world networks! Nevertheless, on can still explore local bridges.
+
+![](images/paste-9268DAE1.png){width="498"}
+
+-   vertex connectivity: The vertex connectivity of a graph is the minimum vertex connectivity of all pairs of vertices in the graph/ the lowest number of vertices in a connected graph whose removal disconnects the graph (articulation points).\
+    [![](https://d2vlcm61l7u1fs.cloudfront.net/media%252Fd5f%252Fd5fa5abe-8b71-4d5d-8e50-633a2208b785%252FphpYAjbNa.png)](https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.chegg.com%2Fhomework-help%2Fquestions-and-answers%2Fdetermine-edge-connectivity-vertex-connectivity-graph-q16960797&psig=AOvVaw02Evj54b0uHqmJ70251_FR&ust=1676303322869000&source=images&cd=vfe&ved=0CBEQjhxqFwoTCLDHs9OqkP0CFQAAAAAdAAAAABBK)
+
+-   Burt's Constraint: It is **commonly used as a measure of structural holes** (accurately speaking, the lack of it, because the larger the constraint value, the less structural opportunities a node have for bridging structural holes.)
+
+    -   Negatively correlated to betweeness.
+        [![](https://www.reliantsproject.com/wp-content/uploads/2020/06/reliants_keyconcepts-02.png)](https://www.reliantsproject.com/2020/06/11/concept-5-burts-structural-holes-and-when-you-can-be-a-broker/)
+
+
+        [![](https://d3i71xaburhd42.cloudfront.net/84ffa3a19401decaf9f508f0927e7b5b0ea64291/5-Figure1-1.png)](https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.semanticscholar.org%2Fpaper%2FBrokers-or-Bridges-Exploring-Structural-Holes-in-a-Zhang-Zeng%2F84ffa3a19401decaf9f508f0927e7b5b0ea64291%2Ffigure%2F1&psig=AOvVaw2d_LmtDM3vfsa-EQVy-9CN&ust=1676303804100000&source=images&cd=vfe&ved=0CBEQjhxqFwoTCPjf4riskP0CFQAAAAAdAAAAABBR)
+
+## One last thing
+
+-   igraph provides many simulation functions for different network architectures.
+
+![](https://noduslabs.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-05-at-19.26.38-510x400.png){width="483"}
+
+[![](https://www.researchgate.net/publication/7316134/figure/fig4/AS:668548171067406@1536405713747/Network-topologies-Top-network-topologies-may-be-expressed-as-varying-along-a.png)](https://www.sciencedirect.com/science/article/abs/pii/S0149763405001648?via%3Dihub)
 
 ## Meeting Videos
 
@@ -16,9 +89,13 @@
 `r knitr::include_url("https://www.youtube.com/embed/URL")`
 
 <details>
-<summary> Meeting chat log </summary>
 
-```
-LOG
-```
+<summary>
+
+Meeting chat log
+
+</summary>
+
+    LOG
+
 </details>

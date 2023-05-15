@@ -13,12 +13,14 @@
 
 ### Cohort 1
 
-`r knitr::include_url("https://www.youtube.com/embed/URL")`
+`r knitr::include_url("https://www.youtube.com/embed/C6lURtMWi7s")`
 
 <details>
 <summary> Meeting chat log </summary>
 
 ```
-LOG
+01:36:21	mohamed.shoeb:	http://blog.schochastics.net/post/network-centrality-in-r-introduction/
+01:36:28	mohamed.shoeb:	http://blog.schochastics.net/post/network-centrality-in-r-neighborhood-inclusion/
+01:36:34	mohamed.shoeb:	http://blog.schochastics.net/post/network-centrality-in-r-new-ways-of-measuring-centrality/
 ```
 </details>

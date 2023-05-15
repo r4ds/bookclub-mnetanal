@@ -13,12 +13,15 @@
 
 ### Cohort 1
 
-`r knitr::include_url("https://www.youtube.com/embed/URL")`
+`r knitr::include_url("https://www.youtube.com/embed/JyQ_wa-4b1U")`
 
 <details>
 <summary> Meeting chat log </summary>
 
 ```
-LOG
+00:07:57	Abdalrhman Mostafa: Hi Alaa, we'll start at 7:10
+00:10:19	Alaa Salah: Hi Abdelrahman ,thank you....do we usually start at that time or just today?
+00:10:57	Abdalrhman Mostafa: We usually start 7:05-7:10 yes
+00:56:04	Abdalrhman Mostafa: https://networkx.guide/algorithms/community-detection/girvan-newman/
 ```
 </details>

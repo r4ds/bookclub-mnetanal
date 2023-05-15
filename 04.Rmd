@@ -284,12 +284,24 @@ graph %>%
 
 ### Cohort 1
 
-`r knitr::include_url("https://www.youtube.com/embed/URL")`
+`r knitr::include_url("https://www.youtube.com/embed/OdtiBD7zIp8")`
 
 <details>
 <summary> Meeting chat log </summary>
 
 ```
-LOG
+00:10:19	Alaa Salah:	we are supposed to read this : https://bookdown.org/markhoff/social_network_analysis/reading-list.html#week-2-beg.-september-27th-types-of-networks
+00:10:22	Alaa Salah:	right?
+00:10:37	mohamed.shoeb:	yes
+00:10:42	Oluwafemi Oyedele:	Yes
+00:10:47	mohamed.shoeb:	we're starting with chapter 4
+00:11:02	mohamed.shoeb:	I've prepared a summary of the content
+00:11:03	Alaa Salah:	okay , thank you
+00:11:17	mohamed.shoeb:	welcome!
+00:11:27	Oluwafemi Oyedele:	Okay
+00:19:24	Hamza:	Thanks for organizing this! I can only join as a listener today since i am away from PC.
+00:28:35	Alaa Salah:	<- like (if ) in python?
+00:29:29	Alaa Salah:	yeah ,thanks
+01:21:38	Hamza:	Thank you Mohammad!
 ```
 </details>

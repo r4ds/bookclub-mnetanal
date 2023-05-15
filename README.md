@@ -10,7 +10,7 @@ As we read, we are producing [notes about the book](https://r4ds.io/mnetanal).
 
 If you would like to present, please see the sign-up sheet for your cohort (linked below, and pinned in the [#book_club-mnetanal](https://rfordatascience.slack.com/archives/C0477G1E5FT) channel on Slack)!
 
-- [Cohort 1](https://docs.google.com/spreadsheets/d/1jAqJqxnPZ9MUZ4TS19cVv1_ZOAC2gYhV4MEbtJZEpxg/edit?usp=sharing) (started 2022-11-13): [Sundays, 11:00 CST/CDT](https://www.timeanddate.com/worldclock/converter.html?iso=20221113T170000&p1=24&p2=tz_cet&p3=1440) | [meeting videos](https://youtube.com/playlist?list=PL3x6DOfs2NGhGpt1HrKzcZx6yU3ZMOnkL)
+- Cohort 1 (started 2022-11-13, ended 2023-03-05): [meeting videos](https://youtube.com/playlist?list=PL3x6DOfs2NGhGpt1HrKzcZx6yU3ZMOnkL)
 
 <hr>
 

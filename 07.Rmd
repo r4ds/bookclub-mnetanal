@@ -373,7 +373,7 @@ ggraph(moneyNetwork_tg, layout = kk_layout) + #kamada.kawai
 
 ### Cohort 1
 
-`r knitr::include_url("https://www.youtube.com/embed/URL")`
+`r knitr::include_url("https://www.youtube.com/embed/H8ihh6AyZ4I")`
 
 <details>
 
@@ -383,6 +383,7 @@ Meeting chat log
 
 </summary>
 ```
-LOG
+00:06:22	Abdalrhman Mostafa:	Hi Mohamed, ezayak!
+00:09:24	mohamed.shoeb:	https://bookdown.org/markhoff/social_network_analysis/
 ```
 </details>

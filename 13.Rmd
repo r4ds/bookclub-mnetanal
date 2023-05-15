@@ -86,16 +86,12 @@ This is the case for small world networks! Nevertheless, on can still explore lo
 
 ### Cohort 1
 
-`r knitr::include_url("https://www.youtube.com/embed/URL")`
+`r knitr::include_url("https://www.youtube.com/embed/jQXJetgVCoY")`
 
 <details>
+<summary> Meeting chat log </summary>
 
-<summary>
-
-Meeting chat log
-
-</summary>
-
-    LOG
-
+```
+01:11:25	mohamed.shoeb: https://en.wikipedia.org/wiki/Dunbar%27s_number
+```
 </details>
